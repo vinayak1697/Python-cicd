@@ -1,0 +1,25 @@
+stages:
+  - pull
+  - run
+
+pull-image:
+  stage: pull
+  script:
+    - echo "Pulling your image from Docker Hub..."
+    - docker pull vinayakhk/python-nru:3.0
+    - docker images
+  when: manual
+
+  tags:
+    - poc  
+
+run-container:
+  stage: run
+  script:
+    - echo "Running a container from your image..."
+    - docker run --rm vinayakhk/python-nru:3.0 python --version
+
+  when: manual
+
+  tags:
+    - poc  
