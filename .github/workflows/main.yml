@@ -1,25 +1,32 @@
-stages:
-  - pull
-  - run
+name: Docker Pull and Run
 
-pull-image:
-  stage: pull
-  script:
-    - echo "Pulling your image from Docker Hub..."
-    - docker pull vinayakhk/python-nru:3.0
-    - docker images
-  when: manual
+on:
+  workflow_dispatch:  # Manual trigger
 
-  tags:
-    - poc  
+jobs:
+  pull-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (not needed for pulling, but good practice)
+        uses: actions/checkout@v3
 
-run-container:
-  stage: run
-  script:
-    - echo "Running a container from your image..."
-    - docker run --rm vinayakhk/python-nru:3.0 python --version
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
 
-  when: manual
+      - name: Pull image from Docker Hub
+        run: |
+          echo "Pulling your image from Docker Hub..."
+          docker pull vinayakhk/python-nru:3.0
+          docker images
 
-  tags:
-    - poc  
+  run-container:
+    needs: pull-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run container from pulled image
+        run: |
+          echo "Running a container from your image..."
+          docker run --rm vinayakhk/python-nru:3.0 python --version
